@@ -1,0 +1,155 @@
+---
+title: "lab03"
+author: "Vanessa Ramos"
+format: html
+editor: visual
+---
+
+## Lab 03
+
+Question 1
+
+```{r}
+met <- data.table::fread(file.path("~", "Downloads", "met_all.gz"))
+```
+
+Question 2
+
+```{r}
+dim(met)
+```
+
+```{r}
+head(met)
+```
+
+```{r}
+tail(met)
+
+```
+
+Question 3
+
+```{r}
+str(met)
+```
+
+Question 4
+
+```{r}
+table(met$year)
+```
+
+```{r}
+table(met$day)
+```
+
+```{r}
+table(met$hour)
+```
+
+```{r}
+summary(met$temp)
+```
+
+```{r}
+summary(met$elev)
+```
+
+```{r}
+summary(met$wind.sp)
+```
+
+```{r}
+met[met$elev==9999.0] <- NA
+summary(met$elev)
+```
+
+The highest elevation is at 4113 meters.
+
+```{r}
+met <- met[temp>-40]
+met2 <- met[order(temp)]
+head(met2)
+```
+
+Question 5
+
+```{r}
+met <- met[temp>-15]
+met2 <- met[order(temp)]
+head(met2)
+```
+
+Question 6
+
+```{r}
+elev <- met[elev==max(elev), ]
+summary(elev)
+```
+
+```{r}
+cor(elev$temp, elev$wind.sp, use="complete")
+```
+
+```{r}
+cor(elev$temp, elev$hour, use="complete")
+```
+
+```{r}
+cor(elev$wind.sp, elev$day, use="complete")
+```
+
+```{r}
+cor(elev$wind.sp, elev$hour, use="complete")
+```
+
+```{r}
+cor(elev$temp, elev$day, use="complete")
+```
+
+Question 7
+
+```{r}
+hist(met$elev, breaks=100)
+```
+
+```{r}
+hist(met$temp)
+```
+
+```{r}
+hist(met$wind.sp)
+```
+
+```{r}
+library(leaflet)
+```
+
+
+
+
+```{r}
+leaflet(elev) %>%
+  addProviderTiles('OpenStreetMap') %>% 
+  addCircles(lat=~lat,lng=~lon, opacity=1, fillOpacity=1, radius=100)
+```
+
+```{r}
+library(lubridate)
+elev$date <- with(elev, ymd_h(paste(year, month, day, hour, sep= ' ')))
+summary(elev$date)
+```
+
+```{r}
+elev <- elev[order(date)]
+head(elev)
+```
+
+```{r}
+plot(elev$date, elev$temp, type='l')
+```
+
+```{r}
+plot(elev$date, elev$wind.sp, type='l')
+```
