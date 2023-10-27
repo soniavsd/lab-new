@@ -3095,9 +3095,9 @@ vertical-align: -.125em;
 <span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Unit: microseconds
-      expr     min       lq      mean   median       uq      max neval
-    fun1() 457.424 631.0810 748.52523 679.2130 809.3625 1382.296   100
- fun1alt()   2.949   5.1095  25.10878   7.1985  12.0430 1666.056   100</code></pre>
+      expr     min       lq     mean   median      uq      max neval
+    fun1() 450.095 613.2325 635.9375 625.2325 650.647  876.553   100
+ fun1alt()   2.929   5.1860  27.2994   5.8495   7.496 2002.525   100</code></pre>
 </div>
 </div>
 <p>The alternative vectorized version of the code has a quicker speed than the for loop version.</p>
@@ -3204,14 +3204,15 @@ x            4.8650100 5.04883353</code></pre>
 <div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">system.time</span>(<span class="fu">my_boot</span>(<span class="at">dat =</span> <span class="fu">data.frame</span>(x, y), my_stat, <span class="at">R =</span> <span class="dv">4000</span>, <span class="at">ncpus =</span> 1L))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>   user  system elapsed 
-  0.072   0.016   2.907 </code></pre>
+  4.824   0.259   2.613 </code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">system.time</span>(<span class="fu">my_boot</span>(<span class="at">dat =</span> <span class="fu">data.frame</span>(x, y), my_stat, <span class="at">R =</span> <span class="dv">4000</span>, <span class="at">ncpus =</span> 2L))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>   user  system elapsed 
-  5.118   0.269   2.787 </code></pre>
+  2.478   0.127   2.636 </code></pre>
 </div>
 </div>
+<p>##</p>
 </section>
 
 </main>
