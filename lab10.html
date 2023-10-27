@@ -1,0 +1,1260 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.353">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Vanessa Ramos">
+
+<title>lab 10</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="lab10_files/libs/clipboard/clipboard.min.js"></script>
+<script src="lab10_files/libs/quarto-html/quarto.js"></script>
+<script src="lab10_files/libs/quarto-html/popper.min.js"></script>
+<script src="lab10_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="lab10_files/libs/quarto-html/anchor.min.js"></script>
+<link href="lab10_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="lab10_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="lab10_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="lab10_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="lab10_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body class="fullcontent">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">lab 10</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Vanessa Ramos </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<section id="set-up" class="level2">
+<h2 class="anchored" data-anchor-id="set-up">Set up</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">#install.packages(c("RSQLite", "DBI"))</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(RSQLite)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(DBI)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Initialize a temporary in memory database</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>con <span class="ot">&lt;-</span> <span class="fu">dbConnect</span>(<span class="fu">SQLite</span>(), <span class="st">":memory:"</span>)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Download tables</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>actor <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"https://raw.githubusercontent.com/ivanceras/sakila/master/csv-sakila-db/actor.csv"</span>)</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>rental <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"https://raw.githubusercontent.com/ivanceras/sakila/master/csv-sakila-db/rental.csv"</span>)</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>customer <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"https://raw.githubusercontent.com/ivanceras/sakila/master/csv-sakila-db/customer.csv"</span>)</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>payment <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"https://raw.githubusercontent.com/ivanceras/sakila/master/csv-sakila-db/payment_p2007_01.csv"</span>)</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Copy data.frames to database</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="fu">dbWriteTable</span>(con, <span class="st">"actor"</span>, actor)</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="fu">dbWriteTable</span>(con, <span class="st">"rental"</span>, rental)</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="fu">dbWriteTable</span>(con, <span class="st">"customer"</span>, customer)</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="fu">dbWriteTable</span>(con, <span class="st">"payment"</span>, payment)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dbListTables</span>(con)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "actor"    "customer" "payment"  "rental"  </code></pre>
+</div>
+</div>
+<div class="cell" data-output.var="results">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>PRAGMA table_info(actor)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="exercise-1" class="level2">
+<h2 class="anchored" data-anchor-id="exercise-1">Exercise 1</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> actor_id, first_name, last_name</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> actor</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="kw">ORDER</span> <span class="kw">by</span> last_name, first_name</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="knitsql-table">
+<table class="table table-sm table-striped small">
+<caption>Displaying records 1 - 10</caption>
+<thead>
+<tr class="header">
+<th style="text-align: right;">actor_id</th>
+<th style="text-align: left;">first_name</th>
+<th style="text-align: left;">last_name</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">58</td>
+<td style="text-align: left;">CHRISTIAN</td>
+<td style="text-align: left;">AKROYD</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">182</td>
+<td style="text-align: left;">DEBBIE</td>
+<td style="text-align: left;">AKROYD</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">92</td>
+<td style="text-align: left;">KIRSTEN</td>
+<td style="text-align: left;">AKROYD</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">118</td>
+<td style="text-align: left;">CUBA</td>
+<td style="text-align: left;">ALLEN</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">145</td>
+<td style="text-align: left;">KIM</td>
+<td style="text-align: left;">ALLEN</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">194</td>
+<td style="text-align: left;">MERYL</td>
+<td style="text-align: left;">ALLEN</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">76</td>
+<td style="text-align: left;">ANGELINA</td>
+<td style="text-align: left;">ASTAIRE</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">112</td>
+<td style="text-align: left;">RUSSELL</td>
+<td style="text-align: left;">BACALL</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">190</td>
+<td style="text-align: left;">AUDREY</td>
+<td style="text-align: left;">BAILEY</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">67</td>
+<td style="text-align: left;">JESSICA</td>
+<td style="text-align: left;">BAILEY</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="exercise-2" class="level2">
+<h2 class="anchored" data-anchor-id="exercise-2">Exercise 2</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> actor_id, first_name, last_name</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> actor</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> last_name <span class="kw">IN</span> (<span class="st">'WILLIAMS'</span>, <span class="st">'DAVIS'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="knitsql-table">
+<table class="table table-sm table-striped small">
+<caption>6 records</caption>
+<thead>
+<tr class="header">
+<th style="text-align: right;">actor_id</th>
+<th style="text-align: left;">first_name</th>
+<th style="text-align: left;">last_name</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">4</td>
+<td style="text-align: left;">JENNIFER</td>
+<td style="text-align: left;">DAVIS</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">72</td>
+<td style="text-align: left;">SEAN</td>
+<td style="text-align: left;">WILLIAMS</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">101</td>
+<td style="text-align: left;">SUSAN</td>
+<td style="text-align: left;">DAVIS</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">110</td>
+<td style="text-align: left;">SUSAN</td>
+<td style="text-align: left;">DAVIS</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">137</td>
+<td style="text-align: left;">MORGAN</td>
+<td style="text-align: left;">WILLIAMS</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">172</td>
+<td style="text-align: left;">GROUCHO</td>
+<td style="text-align: left;">WILLIAMS</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="exercise-3" class="level2">
+<h2 class="anchored" data-anchor-id="exercise-3">Exercise 3</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="kw">DISTINCT</span> rental_id</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> rental</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> <span class="dt">date</span>(rental_date) <span class="op">=</span> <span class="st">'2005-07-05'</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="knitsql-table">
+<table class="table table-sm table-striped small">
+<caption>Displaying records 1 - 10</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;">rental_id</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">3470</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">3471</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">3472</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">3473</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">3474</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">3475</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">3476</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">3477</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">3478</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">3479</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="exercise-4.1" class="level2">
+<h2 class="anchored" data-anchor-id="exercise-4.1">Exercise 4.1</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> payment</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> amount <span class="kw">IN</span> (<span class="fl">1.99</span>, <span class="fl">7.99</span>, <span class="fl">9.99</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="knitsql-table">
+<table class="table table-sm table-striped small">
+<caption>Displaying records 1 - 10</caption>
+<colgroup>
+<col style="width: 14%">
+<col style="width: 15%">
+<col style="width: 11%">
+<col style="width: 13%">
+<col style="width: 9%">
+<col style="width: 35%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: right;">payment_id</th>
+<th style="text-align: right;">customer_id</th>
+<th style="text-align: right;">staff_id</th>
+<th style="text-align: right;">rental_id</th>
+<th style="text-align: right;">amount</th>
+<th style="text-align: left;">payment_date</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">16050</td>
+<td style="text-align: right;">269</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">1.99</td>
+<td style="text-align: left;">2007-01-24 21:40:19.996577</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">16056</td>
+<td style="text-align: right;">270</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">193</td>
+<td style="text-align: right;">1.99</td>
+<td style="text-align: left;">2007-01-26 05:10:14.996577</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">16081</td>
+<td style="text-align: right;">282</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">48</td>
+<td style="text-align: right;">1.99</td>
+<td style="text-align: left;">2007-01-25 04:49:12.996577</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">16103</td>
+<td style="text-align: right;">294</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">595</td>
+<td style="text-align: right;">1.99</td>
+<td style="text-align: left;">2007-01-28 12:28:20.996577</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">16133</td>
+<td style="text-align: right;">307</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">614</td>
+<td style="text-align: right;">1.99</td>
+<td style="text-align: left;">2007-01-28 14:01:54.996577</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">16158</td>
+<td style="text-align: right;">316</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1065</td>
+<td style="text-align: right;">1.99</td>
+<td style="text-align: left;">2007-01-31 07:23:22.996577</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">16160</td>
+<td style="text-align: right;">318</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">224</td>
+<td style="text-align: right;">9.99</td>
+<td style="text-align: left;">2007-01-26 08:46:53.996577</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">16161</td>
+<td style="text-align: right;">319</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">9.99</td>
+<td style="text-align: left;">2007-01-24 23:07:48.996577</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">16180</td>
+<td style="text-align: right;">330</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">967</td>
+<td style="text-align: right;">7.99</td>
+<td style="text-align: left;">2007-01-30 17:40:32.996577</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">16206</td>
+<td style="text-align: right;">351</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1137</td>
+<td style="text-align: right;">1.99</td>
+<td style="text-align: left;">2007-01-31 17:48:40.996577</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="exercise-4.2" class="level2">
+<h2 class="anchored" data-anchor-id="exercise-4.2">Exercise 4.2</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> payment</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> amount <span class="op">&gt;</span> <span class="dv">5</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="knitsql-table">
+<table class="table table-sm table-striped small">
+<caption>Displaying records 1 - 10</caption>
+<colgroup>
+<col style="width: 14%">
+<col style="width: 15%">
+<col style="width: 11%">
+<col style="width: 13%">
+<col style="width: 9%">
+<col style="width: 35%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: right;">payment_id</th>
+<th style="text-align: right;">customer_id</th>
+<th style="text-align: right;">staff_id</th>
+<th style="text-align: right;">rental_id</th>
+<th style="text-align: right;">amount</th>
+<th style="text-align: left;">payment_date</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">16052</td>
+<td style="text-align: right;">269</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">678</td>
+<td style="text-align: right;">6.99</td>
+<td style="text-align: left;">2007-01-28 21:44:14.996577</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">16058</td>
+<td style="text-align: right;">271</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1096</td>
+<td style="text-align: right;">8.99</td>
+<td style="text-align: left;">2007-01-31 11:59:15.996577</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">16060</td>
+<td style="text-align: right;">272</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">405</td>
+<td style="text-align: right;">6.99</td>
+<td style="text-align: left;">2007-01-27 12:01:05.996577</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">16061</td>
+<td style="text-align: right;">272</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1041</td>
+<td style="text-align: right;">6.99</td>
+<td style="text-align: left;">2007-01-31 04:14:49.996577</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">16068</td>
+<td style="text-align: right;">274</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">394</td>
+<td style="text-align: right;">5.99</td>
+<td style="text-align: left;">2007-01-27 09:54:37.996577</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">16073</td>
+<td style="text-align: right;">276</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">860</td>
+<td style="text-align: right;">10.99</td>
+<td style="text-align: left;">2007-01-30 01:13:42.996577</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">16074</td>
+<td style="text-align: right;">277</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">308</td>
+<td style="text-align: right;">6.99</td>
+<td style="text-align: left;">2007-01-26 20:30:05.996577</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">16082</td>
+<td style="text-align: right;">282</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">282</td>
+<td style="text-align: right;">6.99</td>
+<td style="text-align: left;">2007-01-26 17:24:52.996577</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">16086</td>
+<td style="text-align: right;">284</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1145</td>
+<td style="text-align: right;">6.99</td>
+<td style="text-align: left;">2007-01-31 18:42:11.996577</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">16087</td>
+<td style="text-align: right;">286</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">81</td>
+<td style="text-align: right;">6.99</td>
+<td style="text-align: left;">2007-01-25 10:43:45.996577</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="exercise-4.3" class="level2">
+<h2 class="anchored" data-anchor-id="exercise-4.3">Exercise 4.3</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> payment</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> amount <span class="op">&gt;</span> <span class="dv">5</span> <span class="kw">AND</span> amount <span class="op">&lt;</span> <span class="dv">8</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="knitsql-table">
+<table class="table table-sm table-striped small">
+<caption>Displaying records 1 - 10</caption>
+<colgroup>
+<col style="width: 14%">
+<col style="width: 15%">
+<col style="width: 11%">
+<col style="width: 13%">
+<col style="width: 9%">
+<col style="width: 35%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: right;">payment_id</th>
+<th style="text-align: right;">customer_id</th>
+<th style="text-align: right;">staff_id</th>
+<th style="text-align: right;">rental_id</th>
+<th style="text-align: right;">amount</th>
+<th style="text-align: left;">payment_date</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">16052</td>
+<td style="text-align: right;">269</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">678</td>
+<td style="text-align: right;">6.99</td>
+<td style="text-align: left;">2007-01-28 21:44:14.996577</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">16060</td>
+<td style="text-align: right;">272</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">405</td>
+<td style="text-align: right;">6.99</td>
+<td style="text-align: left;">2007-01-27 12:01:05.996577</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">16061</td>
+<td style="text-align: right;">272</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1041</td>
+<td style="text-align: right;">6.99</td>
+<td style="text-align: left;">2007-01-31 04:14:49.996577</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">16068</td>
+<td style="text-align: right;">274</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">394</td>
+<td style="text-align: right;">5.99</td>
+<td style="text-align: left;">2007-01-27 09:54:37.996577</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">16074</td>
+<td style="text-align: right;">277</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">308</td>
+<td style="text-align: right;">6.99</td>
+<td style="text-align: left;">2007-01-26 20:30:05.996577</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">16082</td>
+<td style="text-align: right;">282</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">282</td>
+<td style="text-align: right;">6.99</td>
+<td style="text-align: left;">2007-01-26 17:24:52.996577</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">16086</td>
+<td style="text-align: right;">284</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1145</td>
+<td style="text-align: right;">6.99</td>
+<td style="text-align: left;">2007-01-31 18:42:11.996577</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">16087</td>
+<td style="text-align: right;">286</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">81</td>
+<td style="text-align: right;">6.99</td>
+<td style="text-align: left;">2007-01-25 10:43:45.996577</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">16092</td>
+<td style="text-align: right;">288</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">427</td>
+<td style="text-align: right;">6.99</td>
+<td style="text-align: left;">2007-01-27 14:38:30.996577</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">16094</td>
+<td style="text-align: right;">288</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">565</td>
+<td style="text-align: right;">5.99</td>
+<td style="text-align: left;">2007-01-28 07:54:57.996577</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="exercise-5" class="level2">
+<h2 class="anchored" data-anchor-id="exercise-5">Exercise 5</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> customer <span class="kw">AS</span> a <span class="kw">INNER</span> <span class="kw">JOIN</span> payment <span class="kw">AS</span> b </span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="kw">ON</span> a.customer_id <span class="op">=</span> b.customer_id</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> a.last_name <span class="op">=</span> <span class="ot">"DAVIS"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="knitsql-table">
+<table class="table table-sm table-striped small">
+<caption>3 records</caption>
+<colgroup>
+<col style="width: 5%">
+<col style="width: 4%">
+<col style="width: 5%">
+<col style="width: 4%">
+<col style="width: 15%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 9%">
+<col style="width: 3%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 3%">
+<col style="width: 12%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: right;">customer_id</th>
+<th style="text-align: right;">store_id</th>
+<th style="text-align: left;">first_name</th>
+<th style="text-align: left;">last_name</th>
+<th style="text-align: left;">email</th>
+<th style="text-align: right;">address_id</th>
+<th style="text-align: left;">activebool</th>
+<th style="text-align: left;">create_date</th>
+<th style="text-align: left;">last_update</th>
+<th style="text-align: right;">active</th>
+<th style="text-align: right;">payment_id</th>
+<th style="text-align: right;">customer_id</th>
+<th style="text-align: right;">staff_id</th>
+<th style="text-align: right;">rental_id</th>
+<th style="text-align: right;">amount</th>
+<th style="text-align: left;">payment_date</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: left;">JENNIFER</td>
+<td style="text-align: left;">DAVIS</td>
+<td style="text-align: left;">JENNIFER.DAVIS@sakilacustomer.org</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: left;">t</td>
+<td style="text-align: left;">2006-02-14</td>
+<td style="text-align: left;">2006-02-15 09:57:20</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">16685</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">57</td>
+<td style="text-align: right;">4.99</td>
+<td style="text-align: left;">2007-01-25 07:11:58.996577</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: left;">JENNIFER</td>
+<td style="text-align: left;">DAVIS</td>
+<td style="text-align: left;">JENNIFER.DAVIS@sakilacustomer.org</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: left;">t</td>
+<td style="text-align: left;">2006-02-14</td>
+<td style="text-align: left;">2006-02-15 09:57:20</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">16686</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">577</td>
+<td style="text-align: right;">2.99</td>
+<td style="text-align: left;">2007-01-28 09:37:40.996577</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: left;">JENNIFER</td>
+<td style="text-align: left;">DAVIS</td>
+<td style="text-align: left;">JENNIFER.DAVIS@sakilacustomer.org</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: left;">t</td>
+<td style="text-align: left;">2006-02-14</td>
+<td style="text-align: left;">2006-02-15 09:57:20</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">16687</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">916</td>
+<td style="text-align: right;">0.99</td>
+<td style="text-align: left;">2007-01-30 09:53:27.996577</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="exercise-6.1" class="level2">
+<h2 class="anchored" data-anchor-id="exercise-6.1">Exercise 6.1</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="fu">COUNT</span>(<span class="op">*</span>) </span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> rental</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="knitsql-table">
+<table class="table table-sm table-striped small">
+<caption>1 records</caption>
+<thead>
+<tr class="header">
+<th style="text-align: right;">COUNT(*)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">16044</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="exercise-6.2" class="level2">
+<h2 class="anchored" data-anchor-id="exercise-6.2">Exercise 6.2</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> customer_id, </span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">COUNT</span>(<span class="op">*</span>) <span class="kw">AS</span> unique_rentals</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> rental</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="kw">GROUP</span> <span class="kw">BY</span> customer_id</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="knitsql-table">
+<table class="table table-sm table-striped small">
+<caption>Displaying records 1 - 10</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;">customer_id</th>
+<th style="text-align: right;">unique_rentals</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">1</td>
+<td style="text-align: right;">32</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2</td>
+<td style="text-align: right;">27</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">3</td>
+<td style="text-align: right;">26</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">4</td>
+<td style="text-align: right;">22</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">5</td>
+<td style="text-align: right;">38</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">6</td>
+<td style="text-align: right;">28</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">7</td>
+<td style="text-align: right;">33</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">8</td>
+<td style="text-align: right;">24</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">9</td>
+<td style="text-align: right;">23</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">10</td>
+<td style="text-align: right;">25</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="exercise-6.3" class="level2">
+<h2 class="anchored" data-anchor-id="exercise-6.3">Exercise 6.3</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> customer_id, </span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="fu">COUNT</span>(<span class="op">*</span>) <span class="kw">AS</span> unique_rentals</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> rental</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="kw">GROUP</span> <span class="kw">BY</span> customer_id</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="kw">ORDER</span> <span class="kw">BY</span> unique_rentals <span class="kw">DESC</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="knitsql-table">
+<table class="table table-sm table-striped small">
+<caption>Displaying records 1 - 10</caption>
+<thead>
+<tr class="header">
+<th style="text-align: right;">customer_id</th>
+<th style="text-align: right;">unique_rentals</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">148</td>
+<td style="text-align: right;">46</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">526</td>
+<td style="text-align: right;">45</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">236</td>
+<td style="text-align: right;">42</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">144</td>
+<td style="text-align: right;">42</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">75</td>
+<td style="text-align: right;">41</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">469</td>
+<td style="text-align: right;">40</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">197</td>
+<td style="text-align: right;">40</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">468</td>
+<td style="text-align: right;">39</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">178</td>
+<td style="text-align: right;">39</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">137</td>
+<td style="text-align: right;">39</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="exercise-6.4" class="level2">
+<h2 class="anchored" data-anchor-id="exercise-6.4">Exercise 6.4</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> customer_id, </span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="fu">COUNT</span>(<span class="op">*</span>) <span class="kw">AS</span> unique_rentals</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> rental</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="kw">GROUP</span> <span class="kw">BY</span> customer_id</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="kw">HAVING</span> <span class="fu">COUNT</span>(<span class="op">*</span>) <span class="op">&gt;</span> <span class="dv">40</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="knitsql-table">
+<table class="table table-sm table-striped small">
+<caption>5 records</caption>
+<thead>
+<tr class="header">
+<th style="text-align: right;">customer_id</th>
+<th style="text-align: right;">unique_rentals</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">75</td>
+<td style="text-align: right;">41</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">144</td>
+<td style="text-align: right;">42</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">148</td>
+<td style="text-align: right;">46</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">236</td>
+<td style="text-align: right;">42</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">526</td>
+<td style="text-align: right;">45</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="exercise-7.1" class="level2">
+<h2 class="anchored" data-anchor-id="exercise-7.1">Exercise 7.1</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> customer_id, </span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="fu">SUM</span>(amount) <span class="kw">AS</span> amount,</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="fu">MAX</span>(amount) <span class="kw">AS</span> amount,</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="fu">MIN</span>(amount) <span class="kw">AS</span> amount</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> payment</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="knitsql-table">
+<table class="table table-sm table-striped small">
+<caption>1 records</caption>
+<thead>
+<tr class="header">
+<th style="text-align: right;">customer_id</th>
+<th style="text-align: right;">amount</th>
+<th style="text-align: right;">amount</th>
+<th style="text-align: right;">amount</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">269</td>
+<td style="text-align: right;">4824.43</td>
+<td style="text-align: right;">11.99</td>
+<td style="text-align: right;">0.99</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="exercise-7.2" class="level2">
+<h2 class="anchored" data-anchor-id="exercise-7.2">Exercise 7.2</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> customer_id, </span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="fu">COUNT</span>(<span class="op">*</span>) <span class="kw">AS</span> <span class="fu">count</span>,</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="fu">SUM</span>(amount) <span class="kw">AS</span> amount,</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="fu">MAX</span>(amount) <span class="kw">AS</span> amount,</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="fu">MIN</span>(amount) <span class="kw">AS</span> amount</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> payment</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a><span class="kw">HAVING</span> <span class="fu">COUNT</span>(<span class="op">*</span>) <span class="op">&gt;</span><span class="dv">5</span> </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="knitsql-table">
+<table class="table table-sm table-striped small">
+<caption>1 records</caption>
+<thead>
+<tr class="header">
+<th style="text-align: right;">customer_id</th>
+<th style="text-align: right;">count</th>
+<th style="text-align: right;">amount</th>
+<th style="text-align: right;">amount</th>
+<th style="text-align: right;">amount</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">269</td>
+<td style="text-align: right;">1157</td>
+<td style="text-align: right;">4824.43</td>
+<td style="text-align: right;">11.99</td>
+<td style="text-align: right;">0.99</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="cleanup" class="level2">
+<h2 class="anchored" data-anchor-id="cleanup">Cleanup</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dbDisconnect</span>(con)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
